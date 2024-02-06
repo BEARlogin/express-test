@@ -34,15 +34,19 @@ const promisify = (fn) => {
 
 };
 
-app.get('/file', async (req,res) => {
-  try {
-    const result = await promisify(fs.readFile)(path.resolve(__dirname, './test2.txt'), 'utf8');
 
-    res.send(result);
-  } catch (err) {
-    res.status(500).send(err);
-  }
-});
+const asyncUtil = fn =>
+  function asyncUtilWrap(...args) {
+    const fnReturn = fn(...args);
+    const next = args[args.length-1];
+    return Promise.resolve(fnReturn).catch((err) => next(err));
+  };
+
+
+app.get('/file', asyncUtil(async (req,res, next) => {
+  const result = await promisify(fs.readFile)(path.resolve(__dirname, './test3.txt'), 'utf8');
+  res.send(result);
+}));
 
 // add users route
 app.use('/users', users);

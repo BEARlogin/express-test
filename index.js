@@ -34,14 +34,14 @@ const promisify = (fn) => {
 
 };
 
-app.get('/file', (req,res) => {
-  promisify(fs.readFile)(path.resolve(__dirname, './test2.txt'), 'utf8').then((data) => {
-    res.send(data);
-  }).catch((err) => {
+app.get('/file', async (req,res) => {
+  try {
+    const result = await promisify(fs.readFile)(path.resolve(__dirname, './test2.txt'), 'utf8');
+
+    res.send(result);
+  } catch (err) {
     res.status(500).send(err);
-  }).finally(() => {
-    console.log('done');
-  });
+  }
 });
 
 // add users route

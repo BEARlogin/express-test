@@ -5,11 +5,11 @@ function dev() {
 
   process.once('SIGINT', () => {
     process.kill(process.pid, 'SIGINT');
-  });
+  }); 
 
   process.on('SIGHUP', () => {
     // eslint-disable-next-line no-process-exit
-    process.exit(1);
+    process.exit(1); 
   });  
 }
 

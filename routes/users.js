@@ -1,6 +1,7 @@
 const express = require('express');
 
 const router = express.Router();
+const fs = require('fs');
 
 let count = 0;
 const users = [];
@@ -23,16 +24,25 @@ function keyGuard(req, res, next) {
 
 // auth middleware
 function authGuard(req, res, next) {
-  if (users.some((u) => u.name === req.query.user && u.password === req.query.password)) {
+  const user = users.some((u) => u.name === req.query.user && u.password === req.query.password);
+  if (user) {
     next();
+    req.user = user;
   } else {
     res.status(401).send('invalid user');
   }
 }
 
 // routes
-router.get('/', authGuard, (req, res) => {
-  res.json(users);
+router.get('/', [keyGuard, authGuard, counter], (req, res) => {
+  setTimeout(() => {
+    res.json(users);
+  }, 2000);
+});
+
+
+router.get('/count', counter, (req, res) => {   
+  res.send(`Count =  ${req.count}`);
 });
 
 router.get('/:id', (req, res) => {
